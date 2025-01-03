@@ -1,8 +1,7 @@
-import { enrollFingerprint } from "../services/enrollmentService.js";
+import { enrollFingerprint,verifyFingerprint} from "../services/enrollmentService.js";
 import { PrismaClient } from "@prisma/client";
 import { verifyFingerprintFromHardware } from '../services/fingerprintService.js';
-import { getPaymentsByFingerprint } from '../services/fingerprintService.js';
-
+import { getPaymentsByFingerprint } from '../services/fingerprintService.js'; 
 const prisma = new PrismaClient();
 
 export const enrollStudent = async (req, res) => {
@@ -50,40 +49,24 @@ export const enrollStudent = async (req, res) => {
  * Handle hardware fingerprint data and perform an action.
  */
 export const handleHardwareFingerprint = async (req, res) => {
-  const { rawFingerprintData, action, amount } = req.body;
-
-  if (!rawFingerprintData || !action) {
-    return res.status(400).json({ status: 'failure', message: 'Missing fingerprint data or action.' });
-  }
-
   try {
-    const student = await verifyFingerprintFromHardware(rawFingerprintData);
+    const result = await verifyFingerprint();
 
-    switch (action) {
-      case 'getBalance':
-        return res.status(200).json({ status: 'success', balance: student.balance });
-
-      case 'getDetails':
-        return res.status(200).json({ status: 'success', student });
-
-      case 'getPayments':
-        const payments = await getPaymentsByFingerprint(student.fingerprintId);
-        return res.status(200).json({ status: 'success', payments });
-
-      case 'makePayment':
-        if (!amount || amount <= 0) {
-          return res.status(400).json({ status: 'failure', message: 'Invalid payment amount.' });
-        }
-        // Mock payment logic here (e.g., record payment and update balance)
-        return res.status(200).json({ status: 'success', message: 'Payment processed successfully.' });
-
-      default:
-        return res.status(400).json({ status: 'failure', message: 'Invalid action.' });
+    if (result.success) {
+      console.log(`Fingerprint verified successfully! ID: ${result.id}`);
+      res.json({ message: "Fingerprint verified successfully!", id: result.id });
+    } else {
+      console.error("Fingerprint verification failed.");
+      res.status(400).json({ message: "Fingerprint verification failed." });
     }
   } catch (error) {
-    res.status(500).json({ status: 'failure', message: error.message });
+    console.error("Error processing fingerprint:", error.message);
+    console.error("Error processing fingerprint:", error);
+    res.status(500).json({ message: "An error occurred while verifying the fingerprint." });
   }
 };
+
+
 
 
 

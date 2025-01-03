@@ -37,29 +37,30 @@ export const enrollFingerprint = async (fingerprintId) => {
     return false;
   }
 };
-export const verifyFingerprint = async (fingerprintId) => {
+
+ 
+export const verifyFingerprint = async () => {
   try {
-    // Send a POST request to the hardware's enrollment endpoint
-    const response = await axios.post(`${HARDWARE_API_URL}/enroll`, {
+    // Send a POST request to the hardware's verification endpoint
+    const response = await axios.post(`${HARDWARE_API_URL}/verify`, {
       message: "request",
     });
-
-    // Check response status
-    if (response.data && response.data.status === "success") {
-      console.log(`Enrollment successful for Fingerprint ID: ${fingerprintId}`);
-      return true;
+    console.log(response.data);
+    
+    // Check response status and return result
+    if (response.data && response.data.status === "success" && response.data.message) {
+      console.log(`Verification successful for Fingerprint ID: ${response.data.message}`);
+      return { success: true, id: response.data.message };
     } else {
-      console.error(`Enrollment failed for Fingerprint ID: ${fingerprintId}`);
+      console.error(`Verification failed for Fingerprint `);
       console.error(`Reason: ${response.data.message || "Unknown error"}`);
-      return false;
+      return { success: false, id: null };
     }
   } catch (error) {
     // Handle errors from the hardware API
-    console.error(
-      `Error communicating with hardware for Fingerprint ID: ${fingerprintId}`
-    );
-    console.error(error);
+    console.error(`Error communicating with hardware for Fingerprint`);
     console.error(error.message);
-    return false;
+    console.error(error);
+    return { success: false, id: null };
   }
 };
