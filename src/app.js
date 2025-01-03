@@ -3,7 +3,15 @@ import bodyParser from 'body-parser';
 import studentRoutes from './routes/student.routes'; 
 import cors from "cors"
 const app = express();
-app.use(cors());
+// CORS configuration
+const corsOptions = {
+    origin: '*', // Allow all origins
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type'],
+    credentials: true
+  };
+  
+  app.use(cors(corsOptions));
 app.use(bodyParser.json());
 
 // Register Routes
