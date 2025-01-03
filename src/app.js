@@ -1,8 +1,9 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import studentRoutes from './routes/student.routes'; 
-
+import cors from "cors"
 const app = express();
+app.use(cors());
 app.use(bodyParser.json());
 
 // Register Routes
