@@ -3,7 +3,9 @@
   import axios from "axios"; // Axios is used for making HTTP requests
 
 const HARDWARE_API_URL =
-  process.env.HARDWARE_API_URL || "http://102.22.168.183";
+  process.env.HARDWARE_API_URL || "http://192.168.1.80";
+  
+console.log(HARDWARE_API_URL);
 
 /**
  * Enroll a fingerprint in the hardware.
